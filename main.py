@@ -3,8 +3,8 @@ import requests
 import re
 
 
-#url = input("Enter a website to extract the URL's from: ")
-#r  = requests.get("http://" +url)
+url = input("Enter a website to extract the URL's from: ")
+r  = requests.get("http://" +url)
 
 
 r = requests.get("https://www.youtube.com/playlist?list=PLvdtkdCcH2D3BWrdv2yMwIJ7-ScsklImS&disable_polymer=true")
