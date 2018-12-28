@@ -3,7 +3,7 @@ import requests
 import re
 
 
-url = input("Enter a website to extract the URL's from: ")
+#url = input("Enter a website to extract the URL's from: ")
 r  = requests.get("http://" +url)
 
 
