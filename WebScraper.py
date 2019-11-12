@@ -19,8 +19,6 @@ class WebScraper:
             if not _url.startswith(proper_start):
                 start = r"(?i)^.*youtube.com"
                 _url = re.sub(start, proper_start, _url)
-        else:
-            print()
         return _url
 
     def get_list_of_songs(self):
@@ -30,18 +28,19 @@ class WebScraper:
             if td.get('class')[0] == 'pl-video-title':
                 for var in td.find_all('a'):
                     if var.get('class')[0] == 'pl-video-title-link':
-                        ret.append('Song: ' + var.get_text().strip() + '\n')
-                        ret.append('Link: www.youtube.com' + var.get('href') + '\n')
+                        # Song
+                        ret.append(var.get_text().strip())
+                        # Link
+                        ret.append('www.youtube.com' + var.get('href'))
                 for div in td.find_all('div'):
                     if div.get('class')[0] == 'pl-video-owner':
                         if re.search(r'(?<=by ).+(?= - Topic)', div.get_text().strip()):
-                            ret.append('Artist / Video Channel: ' + re.search(r'(?<=by ).+(?= - Topic)',
-                                                                              div.get_text().strip()).group() + '\n')
+                            # Artist / Video Channel
+                            ret.append(re.search(r'(?<=by ).+(?= - Topic)', div.get_text().strip()).group())
                         elif re.search(r'(?<=by ).+', div.get_text().strip()):
-                            ret.append('Artist / Video Channel: ' + re.search(r'(?<=by ).+',
-                                                                              div.get_text().strip()).group() + '\n')
+                            # Artist / Video Channel
+                            ret.append(re.search(r'(?<=by ).+', div.get_text().strip()).group())
                         else:
-                            ret.append('Regex did not match.' + '\n')
-                        #ret.append('---------------------------------------' + '\n')
+                            ret.append('Regex did not match.')
 
         return ret
