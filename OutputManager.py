@@ -6,76 +6,41 @@ import csv
 class OutputManager:
 
     # todo we should not need a soup reference
+    # todo have a clobber setting
     output_type = ""
-    soup = ""
 
-    def __init__(self, output_type, soup):
+    def __init__(self, output_type):
         self.output_type = output_type
-        self.soup = soup
 
-    def output_to_terminal(self):
-        for td in self.soup.find_all('td'):
-            # Class is held in a list.
-            if td.get('class')[0] == 'pl-video-title':
-                for var in td.find_all('a'):
-                    if var.get('class')[0] == 'pl-video-title-link':
-                        print('Song: ' + var.get_text().strip())
-                        print('Link: www.youtube.com' + var.get('href'))
-                for div in td.find_all('div'):
-                    if div.get('class')[0] == 'pl-video-owner':
-                        if re.search(r'(?<=by ).+(?= - Topic)', div.get_text().strip()):
-                            print('Artist / Video Channel: ' + re.search(r'(?<=by ).+(?= - Topic)', div.get_text().strip()).group())
-                        elif re.search(r'(?<=by ).+', div.get_text().strip()):
-                            print('Artist / Video Channel: ' + re.search(r'(?<=by ).+', div.get_text().strip()).group())
-                        else:
-                            print('Regex did not match.')
-                        print('---------------------------------------')
+    def insert_delimiters(self, input_list):
+        i = 3
+        while i < len(input_list):
+            input_list.insert(i, '---------------------------------------')
+            i += 4
+        return input_list
 
-    def output_to_txt(self):
+    def output_to_terminal(self, input_list):
+        new_list = self.insert_delimiters(input_list)
+        for item in new_list:
+            print(item)
+
+    def output_to_txt(self, input_list):
         self.create_output_directory()
+        new_list = self.insert_delimiters(input_list)
         f = open("Output/MySongs.txt", "w+")
-        for td in self.soup.find_all('td'):
-            # Class is held in a list.
-            if td.get('class')[0] == 'pl-video-title':
-                for var in td.find_all('a'):
-                    if var.get('class')[0] == 'pl-video-title-link':
-                        f.write('Song: ' + var.get_text().strip() + '\n')
-                        f.write('Link: www.youtube.com' + var.get('href') + '\n')
-                for div in td.find_all('div'):
-                    if div.get('class')[0] == 'pl-video-owner':
-                        if re.search(r'(?<=by ).+(?= - Topic)', div.get_text().strip()):
-                            f.write('Artist / Video Channel: ' + re.search(r'(?<=by ).+(?= - Topic)',
-                                                                           div.get_text().strip()).group() + '\n')
-                        elif re.search(r'(?<=by ).+', div.get_text().strip()):
-                            f.write('Artist / Video Channel: ' + re.search(r'(?<=by ).+',
-                                                                           div.get_text().strip()).group() + '\n')
-                        else:
-                            f.write('Regex did not match.' + '\n')
-                        f.write('---------------------------------------' + '\n')
+        for item in new_list:
+            f.write(item + '\n')
         f.close()
 
-    def output_to_csv(self):
+    def output_to_csv(self, input_list):
         self.create_output_directory()
+        it = iter(input_list)
         with open('Output/MySongs.csv', 'w+') as csvfile:
-            filewriter = csv.writer(csvfile, delimiter=',',
+            file_writer = csv.writer(csvfile, delimiter=',',
                                     quotechar='|', quoting=csv.QUOTE_MINIMAL)
-            filewriter.writerow(['Song', 'Link', 'Artist'])
-            for td in self.soup.find_all('td'):
-                # Class is held in a list.
-                if td.get('class')[0] == 'pl-video-title':
-                    for var in td.find_all('a'):
-                        if var.get('class')[0] == 'pl-video-title-link':
-                            d1 = var.get_text().strip()
-                            d2 = 'youtube.com' + var.get('href')
-                    for div in td.find_all('div'):
-                        if div.get('class')[0] == 'pl-video-owner':
-                            if re.search(r'(?<=by ).+(?= - Topic)', div.get_text().strip()):
-                                d3 = re.search(r'(?<=by ).+(?= - Topic)', div.get_text().strip()).group()
-                            elif re.search(r'(?<=by ).+', div.get_text().strip()):
-                                d3 = re.search(r'(?<=by ).+', div.get_text().strip()).group()
-                            else:
-                                d3 = 'Regex did not match.'
-                    filewriter.writerow([d1, d2, d3])
+            file_writer.writerow(['Song', 'Link', 'Artist'])
+            for a, b, c in zip(it, it, it):
+                file_writer.writerow([a, b, c])
 
     def create_output_directory(self):
             if not os.path.exists('Output'):
