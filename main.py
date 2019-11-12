@@ -1,6 +1,3 @@
-from bs4 import BeautifulSoup
-import requests
-import re
 from OutputManager import OutputManager
 from WebScraper import WebScraper
 import Validator
@@ -23,14 +20,11 @@ while not is_youtube:
     else:
         url = input("This program can only scrape YouTube. Please enter a valid YouTube URL:")
 
-# url = WebScraper.sanitise_input(url)
-
 output_type = input("Enter an output type - terminal / txt / csv: ")
 
 WebScraper = WebScraper(url)
 
 output = WebScraper.get_list_of_songs()
-
 
 is_valid_output = False
 
