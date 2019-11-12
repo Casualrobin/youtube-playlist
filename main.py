@@ -1,84 +1,74 @@
 from bs4 import BeautifulSoup
 import requests
 import re
-import os
-import csv
+import OutputManager
 
-# Get Data from Website.
-url = input("Enter a website to extract the URL's from: ")
-if not url:
-  url = "www.youtube.com/playlist?list=PLvdtkdCcH2D3BWrdv2yMwIJ7-ScsklImS&disable_polymer=true"
-r = requests.get("https://" + url)
+# url = "www.youtube.com/playlist?list=PLvdtkdCcH2D3BWrdv2yMwIJ7-ScsklImS&disable_polymer=true"
+# todo take cmd line arg(s)
+# todo sanitise inputs better - https://youtube.com blah blah - accepted
+# todo add tests
+
+
+def sanitise_input(_url):
+    _url = _url.strip('"')
+    _url = _url.strip("'")
+    if _url.__contains__("youtube.com"):
+        # change protocol / domain to https://www.youtube.com
+        proper_start = "https://www.youtube.com"
+        if not _url.startswith(proper_start):
+            start = r"(?i)^.*youtube.com"
+            _url = re.sub(start, proper_start, _url)
+    else:
+        print()
+    return _url
+
+
+def validate_url(_url):
+    if "youtube.com" in _url:
+        return True
+    else:
+        return False
+
+
+def validate_output_location(_output):
+    if _output == "terminal" or _output == "txt" or _output == "csv":
+        return True
+    else:
+        return False
+
+print("Hello! This application will save the track list from a YouTube playlist.")
+url = input("Please enter a YouTube playlist URL to download a track list from: ")
+
+is_youtube = False
+
+while not is_youtube:
+    is_youtube = validate_url(url)
+    if is_youtube:
+        break
+    else:
+        url = input("This program can only scrape YouTube. Please enter a valid YouTube URL:")
+
+url = sanitise_input(url)
+
+r = requests.get(url)
 data = r.text
 soup = BeautifulSoup(data)
 
+is_valid_output = False
 output_type = input("Enter an output type - terminal / txt / csv: ")
-if not output_type:
-    output_type = 'terminal'
+while not is_valid_output:
+    is_valid_output = validate_output_location(output_type)
+    if is_valid_output:
+        break
+    else:
+        output_type = input("Please enter a valid output type - terminal / txt / csv: ")
 
-# If writing to file, configure output.
-if output_type == 'txt' or output_type == 'csv':
-  if not os.path.exists('Output'):
-    os.mkdir('Output')
-
+OutputManager = OutputManager.OutputManager(output_type, soup)
 
 if output_type == 'terminal':
-  for td in soup.find_all('td'):
-    # Class is held in a list.
-    if td.get('class')[0] == 'pl-video-title':
-      for var in td.find_all('a'):
-        if var.get('class')[0] == 'pl-video-title-link':
-          print('Song: ' + var.get_text().strip())
-          print('Link: www.youtube.com' + var.get('href'))
-      for div in td.find_all('div'):
-        if div.get('class')[0] == 'pl-video-owner':
-          if re.search(r'(?<=by ).+(?= - Topic)', div.get_text().strip()):
-            print('Artist / Video Channel: ' + re.search(r'(?<=by ).+(?= - Topic)', div.get_text().strip()).group())
-          elif re.search(r'(?<=by ).+', div.get_text().strip()):
-            print('Artist / Video Channel: ' + re.search(r'(?<=by ).+', div.get_text().strip()).group())
-          else:
-            print('Regex did not match.')
-          print('---------------------------------------')
-
-if output_type == 'txt':
-  f = open("Output/MySongs.txt", "w+")
-  for td in soup.find_all('td'):
-    # Class is held in a list.
-    if td.get('class')[0] == 'pl-video-title':
-      for var in td.find_all('a'):
-        if var.get('class')[0] == 'pl-video-title-link':
-          f.write('Song: ' + var.get_text().strip() + '\n')
-          f.write('Link: www.youtube.com' + var.get('href') + '\n')
-      for div in td.find_all('div'):
-        if div.get('class')[0] == 'pl-video-owner':
-          if re.search(r'(?<=by ).+(?= - Topic)', div.get_text().strip()):
-            f.write('Artist / Video Channel: ' + re.search(r'(?<=by ).+(?= - Topic)', div.get_text().strip()).group() + '\n')
-          elif re.search(r'(?<=by ).+', div.get_text().strip()):
-            f.write('Artist / Video Channel: ' + re.search(r'(?<=by ).+', div.get_text().strip()).group() + '\n')
-          else:
-            f.write('Regex did not match.' + '\n')
-          f.write('---------------------------------------' + '\n')
-  f.close()
-
-if output_type == 'csv':
-  with open('Output/MySongs.csv', 'w+') as csvfile:
-    filewriter = csv.writer(csvfile, delimiter=',',
-      quotechar='|', quoting=csv.QUOTE_MINIMAL)
-    filewriter.writerow(['Song', 'Link', 'Artist'])
-    for td in soup.find_all('td'):
-      # Class is held in a list.
-      if td.get('class')[0] == 'pl-video-title':
-        for var in td.find_all('a'):
-          if var.get('class')[0] == 'pl-video-title-link':
-            d1 = var.get_text().strip()
-            d2 = 'youtube.com' + var.get('href')
-        for div in td.find_all('div'):
-          if div.get('class')[0] == 'pl-video-owner':
-            if re.search(r'(?<=by ).+(?= - Topic)', div.get_text().strip()):
-              d3 = re.search(r'(?<=by ).+(?= - Topic)', div.get_text().strip()).group()
-            elif re.search(r'(?<=by ).+', div.get_text().strip()):
-              d3 = re.search(r'(?<=by ).+', div.get_text().strip()).group()
-            else:
-              d3 = 'Regex did not match.'
-        filewriter.writerow([d1, d2, d3])
+    OutputManager.output_to_terminal()
+elif output_type == 'txt':
+    OutputManager.output_to_txt()
+elif output_type == 'csv':
+    OutputManager.output_to_csv()
 
