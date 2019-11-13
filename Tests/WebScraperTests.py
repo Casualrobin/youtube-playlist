@@ -6,8 +6,6 @@
 import unittest
 from src.WebScraper import WebScraper
 
-# todo add tests
-
 class TestWebScraper(unittest.TestCase):
 
     def setUp(self):
@@ -29,6 +27,8 @@ class TestWebScraper(unittest.TestCase):
             w, '"youtube.com/playlist?list=PLvdtkdCcH2D3BWrdv2yMwIJ7-ScsklImS&disable_polymer=true"'),
             'https://www.youtube.com/playlist?list=PLvdtkdCcH2D3BWrdv2yMwIJ7-ScsklImS&disable_polymer=true')
 
-
+    # todo
+    def test_get_list_of_songs(self):
+        pass
 if __name__ == '__main__':
     unittest.main()

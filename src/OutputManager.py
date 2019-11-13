@@ -1,6 +1,11 @@
 import os
-import re
 import csv
+
+
+def create_output_directory():
+    #os.mkdir('Output')
+    if not os.path.exists('Output'):
+        os.mkdir('Output')
 
 
 class OutputManager:
@@ -54,6 +59,3 @@ class OutputManager:
             for a, b, c in zip(it, it, it):
                 file_writer.writerow([a, b, c])
 
-    def create_output_directory(self):
-            if not os.path.exists('Output'):
-                os.mkdir('Output')
