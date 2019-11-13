@@ -1,8 +1,10 @@
 def validate_url(_url):
-    if "youtube.com" in _url:
-        return True
-    else:
+    if "youtube.com" not in _url:
         return False
+    elif _url.__contains__(' '):
+        return False
+    else:
+        return True
 
 
 def validate_output_location(_output):

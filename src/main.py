@@ -4,8 +4,6 @@ from OutputManager import OutputManager
 from WebScraper import WebScraper
 
 # url = "www.youtube.com/playlist?list=PLvdtkdCcH2D3BWrdv2yMwIJ7-ScsklImS&disable_polymer=true"
-# todo take cmd line arg(s)
-# todo sanitise inputs better - https://youtube.com blah blah - accepted
 
 print("Hello! This application will save the track list from a YouTube playlist. Ctrl-C to exit.")
 
