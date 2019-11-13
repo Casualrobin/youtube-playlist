@@ -41,7 +41,7 @@ class OutputManager:
             print(item)
 
     def output_to_txt(self, input_list):
-        self.create_output_directory()
+        create_output_directory()
         new_list = self.add_titles_inline(input_list)
         new_list = self.insert_delimiters(new_list)
         f = open("Output/MySongs.txt", "w+")
@@ -50,7 +50,7 @@ class OutputManager:
         f.close()
 
     def output_to_csv(self, input_list):
-        self.create_output_directory()
+        create_output_directory()
         it = iter(input_list)
         with open('Output/MySongs.csv', 'w+') as csvfile:
             file_writer = csv.writer(csvfile, delimiter=',', quoting=csv.QUOTE_MINIMAL)
