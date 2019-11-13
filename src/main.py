@@ -1,45 +1,51 @@
-import src.Validator
-from src.OutputManager import OutputManager
-from src.WebScraper import WebScraper
+import Validator
+import keyboard
+from OutputManager import OutputManager
+from WebScraper import WebScraper
 
 # url = "www.youtube.com/playlist?list=PLvdtkdCcH2D3BWrdv2yMwIJ7-ScsklImS&disable_polymer=true"
 # todo take cmd line arg(s)
 # todo sanitise inputs better - https://youtube.com blah blah - accepted
-# todo would be nice to persist application, multiple urls, multiple output types
 
-print("Hello! This application will save the track list from a YouTube playlist.")
-url = input("Please enter a YouTube playlist URL to download a track list from: ")
+print("Hello! This application will save the track list from a YouTube playlist. Ctrl-C to exit.")
 
-is_youtube = False
+while not keyboard.is_pressed('ctrl+c'):
 
-while not is_youtube:
-    is_youtube = src.Validator.validate_url(url)
-    if is_youtube:
-        break
-    else:
-        url = input("This program can only scrape YouTube. Please enter a valid YouTube URL:")
+    url = input("Please enter a YouTube playlist URL to download a track list from: ")
 
-output_type = input("Enter an output type - terminal / txt / csv: ")
+    is_youtube = False
 
-WebScraper = WebScraper(url)
+    while not is_youtube:
+        is_youtube = Validator.validate_url(url)
+        if is_youtube:
+            break
+        else:
+            url = input("This program can only scrape YouTube. Please enter a valid YouTube URL:")
 
-output = WebScraper.get_list_of_songs()
+    output_type = input("Enter an output type - terminal / txt / csv: ")
 
-is_valid_output = False
+    web_scraper = WebScraper(url)
 
-while not is_valid_output:
-    is_valid_output = src.Validator.validate_output_location(output_type)
-    if is_valid_output:
-        break
-    else:
-        output_type = input("Please enter a valid output type - terminal / txt / csv: ")
+    output = web_scraper.get_list_of_songs()
 
-OutputManager = OutputManager(output_type)
+    is_valid_output = False
 
-if output_type == 'terminal':
-    OutputManager.output_to_terminal(output)
-elif output_type == 'txt':
-    OutputManager.output_to_txt(output)
-elif output_type == 'csv':
-    OutputManager.output_to_csv(output)
+    while not is_valid_output:
+        is_valid_output = Validator.validate_output_location(output_type)
+        if is_valid_output:
+            break
+        else:
+            output_type = input("Please enter a valid output type - terminal / txt / csv: ")
+
+    output_manager = OutputManager(output_type)
+    output_manager.output_type = output_type
+
+    if output_type == 'terminal':
+        output_manager.output_to_terminal(output)
+    elif output_type == 'txt':
+        output_manager.output_to_txt(output)
+    elif output_type == 'csv':
+        output_manager.output_to_csv(output)
+
+
 
