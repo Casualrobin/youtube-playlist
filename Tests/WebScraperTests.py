@@ -1,10 +1,6 @@
-# unittest.main() provides a command-line interface to the test script.
-# The above script is runnable from the command line.
-# from root:
-# python -m unittest Tests.WebScraperTests
-
 import unittest
 from src.WebScraper import WebScraper
+
 
 class TestWebScraper(unittest.TestCase):
 

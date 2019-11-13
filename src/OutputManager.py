@@ -3,7 +3,6 @@ import csv
 
 
 def create_output_directory():
-    #os.mkdir('Output')
     if not os.path.exists('Output'):
         os.mkdir('Output')
 
